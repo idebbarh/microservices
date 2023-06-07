@@ -1,0 +1,68 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: rabbitmq:3.9.7
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - bridge
+
+  mysql_students_db:
+    build: ./students_service_mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: api_students
+    ports:
+      - 3306:3306
+    volumes:
+      - students-mysql-data:/var/lib/mysql
+    networks:
+      - bridge
+    restart: always
+
+  absences_mongodb:
+    image: docker.io/bitnami/mongodb:5.0
+    ports:
+      - 27018:27017
+    volumes:
+      - absences-mongo-data:/data/absences_db
+    networks:
+      - bridge
+
+  absence_service:
+    build: ./absences_service/
+    ports:
+      - 4000:4000
+    depends_on:
+      - absences_mongodb
+      - rabbitmq
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/absences_db
+      - RABBITMQ_URL=amqp://rabbitmq
+    restart: always
+    networks:
+      - bridge
+
+  student_service:
+    build: ./students_service/
+    depends_on:
+      - mysql_students_db
+      - rabbitmq
+    environment:
+      - DB_HOST: mysql_students_db
+      - DB_USER: root
+      - DB_PASSWORD: root
+      - DB_NAME: api_students
+      - RABBITMQ_URL: amqp://rabbitmq
+    ports:
+      - 9000:9000
+    restart: always
+    networks:
+      - bridge
+
+volumes: students-mysql-data
+  absences-mongo-data
+
+networks:
+  bridge:
