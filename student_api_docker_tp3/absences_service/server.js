@@ -4,8 +4,10 @@ const {
   createAbsenceController,
   getAbsencesController,
 } = require("./controllers/absencesController");
+const bodyParser = require("body-parser");
 const app = express();
 
+app.use(bodyParser.json());
 //routes
 app.post("/absences", createAbsenceController);
 app.get("/absences", getAbsencesController);

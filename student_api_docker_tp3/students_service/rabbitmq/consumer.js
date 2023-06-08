@@ -32,6 +32,8 @@ const consumeMessage = async (queueName) => {
     if (connectionURL === undefined) {
       throw Error("rabbitmq connection url undefined");
     }
+    console.log("connection url:" + connectionURL);
+    console.log("queueName:" + queueName);
     const connection = await amqp.connect(connectionURL);
     const channel = await connection.createChannel();
     await channel.assertQueue(queueName);

@@ -4,6 +4,8 @@ const { publish } = require("../rabbitmq/publish");
 const createAbsenceController = async (req, res) => {
   try {
     const { studentId, reason } = req.body;
+    console.log(studentId, reason);
+    console.log(req.body);
     const newAbsence = new AbsenceModel({ studentId, reason });
     const absenceCreated = await newAbsence.save();
     res.status(201).json({ message: absenceCreated + "absence created" });
