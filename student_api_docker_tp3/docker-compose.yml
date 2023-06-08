@@ -9,7 +9,7 @@ services:
       - bridge
 
   mysql_students_db:
-    build: ./students_service_mysql_db
+    build: ./students_service_mysql_db/
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: api_students
@@ -38,8 +38,9 @@ services:
       - absences_mongodb
       - rabbitmq
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/absences_db
-      - RABBITMQ_URL=amqp://rabbitmq
+      MONGODB_URI: mongodb://mongodb:27017/absences_db
+      RABBITMQ_URL: amqp://rabbitmq
+
     restart: always
     networks:
       - bridge
@@ -50,19 +51,20 @@ services:
       - mysql_students_db
       - rabbitmq
     environment:
-      - DB_HOST: mysql_students_db
-      - DB_USER: root
-      - DB_PASSWORD: root
-      - DB_NAME: api_students
-      - RABBITMQ_URL: amqp://rabbitmq
+      DB_HOST: mysql_students_db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: api_students
+      RABBITMQ_URL: amqp://rabbitmq
     ports:
-      - 9000:9000
+      - 9001:9001
     restart: always
     networks:
       - bridge
 
-volumes: students-mysql-data
-  absences-mongo-data
+volumes:
+  students-mysql-data:
+  absences-mongo-data:
 
 networks:
   bridge:
